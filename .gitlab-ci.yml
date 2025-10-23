@@ -1,0 +1,36 @@
+stages:
+  - test_basic
+  - test_advanced
+
+variables:
+  GIT_STRATEGY: fetch
+
+run_basic_tests:
+  stage: test_basic
+  tags:
+      - fomo_project_01
+  only:
+    refs:
+      - main
+  script:
+    - echo "Running basic tests"
+    - cp -r /tmp/eval_dir/* .
+    - mkdir build && cd build
+    - cmake ..
+    - make -j8 benchmark_test_basic
+    - numactl --membind 0 --physcpubind 1 ./benchmark_test_basic
+
+run_advanced_tests:
+  stage: test_advanced
+  tags:
+      - fomo_project_01
+  only:
+    refs:
+      - main
+  script:
+    - echo "Running advanced tests"
+    - cp -r /tmp/eval_dir/* .
+    - mkdir build && cd build
+    - cmake ..
+    - make -j8 benchmark_test_advanced
+    - numactl --membind 0 --physcpubind 1 ./benchmark_test_advanced
